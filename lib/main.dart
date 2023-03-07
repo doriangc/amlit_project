@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:amlit_project/text_typewriter.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -45,30 +46,25 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  List<Widget> widgetsToDraw = [
+    TextTypewriter('Hello World'),
+    TextTypewriter('Hello World', fontSize: 40.0),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.black,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // <a href="https://www.freepik.com/free-photo/white-texture_946233.htm#query=newspaper%20texture&position=0&from_view=keyword&track=ais">Image by bedneyimages</a> on Freepik
-              Image.network(
-                'https://img.freepik.com/free-photo/white-texture_1160-786.jpg',
-                width: 100,
-                height: 100,
-              ),
-              Text('aa'),
-            ],
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/white-texture.jpg"),
+            fit: BoxFit.cover,
           ),
+        ),
+        child: Column(
+          children: [...widgetsToDraw],
         ),
       ),
     );
