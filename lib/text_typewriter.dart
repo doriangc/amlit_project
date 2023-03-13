@@ -30,18 +30,24 @@ class _TextTypewriterState extends State<TextTypewriter>
     _ctrl = AnimationController(
       vsync: this,
       duration: Duration(
-        milliseconds: widget.contents.length * 120,
+        milliseconds: widget.contents.length * 20,
       ),
     );
 
     _ctrl.addStatusListener((status) {
-      if (status == AnimationStatus.completed) widget.doneCallback();
+      print("AA ${status}");
+      if (status == AnimationStatus.completed) {
+        widget.doneCallback();
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.show && !_ctrl.isAnimating && _ctrl.value < 0.1) _ctrl.forward();
+    if (widget.show && !_ctrl.isAnimating && _ctrl.value < 0.1) {
+      print('Now ready!');
+      _ctrl.forward();
+    }
 
     return AnimatedBuilder(
       animation: _ctrl,

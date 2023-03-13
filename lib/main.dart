@@ -53,18 +53,28 @@ class _BookPageState extends State<BookPage> with TickerProviderStateMixin {
   //   TextTypewriter('Hello World', fontSize: 40.0),
   // ];
 
-  String currentName = "";
-  int readyNow = 0;
-
   StoryChunk? _chunkRecurse(String name) {
+    print(name);
     if (!texts.keys.contains(name)) return null;
 
     final tMap = texts[name]!;
 
     final Map<String, StoryChunk?> choices = {};
 
+    // String append = "";
+
+    // if (tMap.containsKey("common")) {
+    //   final lookup = _chunkRecurse(tMap["common"] as String);
+
+    //   append = lookup.getBody();
+    // }
+
+    print(tMap);
     if (tMap.containsKey("choices")) {
-      for (final q in tMap["choices"] as List<List>) {
+      print(tMap["choices"]);
+      for (final q in tMap["choices"] as List) {
+        print("exe");
+        print(q);
         choices[q[0]] = _chunkRecurse(q[1]);
       }
     }
@@ -74,33 +84,8 @@ class _BookPageState extends State<BookPage> with TickerProviderStateMixin {
       rotation: random.nextDouble() - 0.5,
       translationX: 0.0,
       translationY: 40.0 + random.nextDouble() * 20.0,
-      body: Builder(builder: (context) {
-        List<Widget> widgs = [];
-
-        int i = 0;
-        for (final paragraph in tMap["body"] as List) {
-          widgs.add(Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: TextTypewriter(
-              paragraph,
-              fontSize: 20.0,
-              doneCallback: () {
-                setState(() {
-                  readyNow++;
-                });
-              },
-              show: readyNow == i,
-            ),
-          ));
-
-          i++;
-        }
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: widgs,
-        );
-      }),
+      body: TextManager(
+          paragraphs: [for (final t in tMap["body"] as List) t.toString()]),
       choices: choices,
     );
   }
@@ -127,9 +112,6 @@ class _BookPageState extends State<BookPage> with TickerProviderStateMixin {
 
   void _addPage(StoryChunk chunk) {
     setState(() {
-      currentName = chunk.getName();
-      readyNow = 0;
-
       _ctrl.reset();
       _ctrl.forward();
 
@@ -219,15 +201,68 @@ class _BookPageState extends State<BookPage> with TickerProviderStateMixin {
                           _addPage(choices[question]!);
                         }
                       },
-                      child: Text(question),
+                      style: ButtonStyle(
+                          padding:
+                              MaterialStateProperty.all(EdgeInsets.symmetric(
+                        vertical: 15.0,
+                        horizontal: 40.0,
+                      ))),
+                      child: Text(
+                        question,
+                        style: const TextStyle(
+                          fontSize: 25.0,
+                          fontFamily: "Typewriter",
+                        ),
+                      ),
                     )
                 ],
               ),
-              SizedBox(height: 60.0),
+              const SizedBox(height: 60.0),
             ],
           )
         ],
       ),
+    );
+  }
+}
+
+class TextManager extends StatefulWidget {
+  final List<String> paragraphs;
+
+  const TextManager({super.key, required this.paragraphs});
+
+  @override
+  State<TextManager> createState() => _TextManagerState();
+}
+
+class _TextManagerState extends State<TextManager> {
+  int readyNow = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    int i = 0;
+    List<Widget> widgs = [];
+    for (final paragraph in widget.paragraphs) {
+      widgs.add(Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        child: TextTypewriter(
+          paragraph,
+          fontSize: 20.0,
+          doneCallback: () {
+            setState(() {
+              readyNow++;
+            });
+          },
+          show: readyNow == i,
+        ),
+      ));
+
+      i++;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: widgs,
     );
   }
 }
