@@ -6,7 +6,16 @@ class TextTypewriter extends StatefulWidget {
   final String contents;
   final double fontSize;
 
-  const TextTypewriter(this.contents, {super.key, this.fontSize = 30.0});
+  final Function doneCallback;
+  final bool show;
+
+  const TextTypewriter(
+    this.contents, {
+    super.key,
+    this.fontSize = 30.0,
+    required this.doneCallback,
+    this.show = false,
+  });
 
   @override
   State<TextTypewriter> createState() => _TextTypewriterState();
@@ -25,11 +34,15 @@ class _TextTypewriterState extends State<TextTypewriter>
       ),
     );
 
-    _ctrl.forward();
+    _ctrl.addStatusListener((status) {
+      if (status == AnimationStatus.completed) widget.doneCallback();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.show && !_ctrl.isAnimating && _ctrl.value < 0.1) _ctrl.forward();
+
     return AnimatedBuilder(
       animation: _ctrl,
       builder: (contex, _widget) {
